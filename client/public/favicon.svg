@@ -1,0 +1,25 @@
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg_grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0F172A" />
+      <stop offset="100%" style="stop-color:#1E293B" />
+    </linearGradient>
+    
+    <linearGradient id="s_grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#C084FC" /> <stop offset="100%" style="stop-color:#6366F1" /> </linearGradient>
+
+    <filter id="neon_glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="1.2" result="blur" />
+      <feDropShadow dx="0" dy="0" stdDeviation="0.5" flood-color="#818CF8" />
+    </filter>
+  </defs>
+
+  <rect width="32" height="32" rx="8" fill="url(#bg_grad)" />
+  
+  <path d="M8 0V32M16 0V32M24 0V32M0 8H32M0 16H32M0 24H32" stroke="white" stroke-opacity="0.05" stroke-width="0.5"/>
+
+  <g filter="url(#neon_glow)">
+    <path d="M10 11C10 9.89543 10.8954 9 12 9H22V13H14V15H22V19C22 20.1046 21.1046 21 20 21H10V17H18V15H10V11Z" fill="url(#s_grad)" />
+    <circle cx="24" cy="24" r="2.5" fill="#22D3EE" />
+  </g>
+</svg>
