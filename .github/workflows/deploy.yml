@@ -24,7 +24,29 @@ jobs:
           node-version: '18'
           cache: 'npm'
 
-      - name: 📋 Deployment Status
+      - name: � Install Client Dependencies
+        run: cd client && npm install
+
+      - name: 🏗️ Build Client
+        run: cd client && npm run build
+
+      - name: 🚀 Deploy Frontend to Vercel
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        run: |
+          npm install -g vercel
+          vercel deploy --prod --token $VERCEL_TOKEN
+
+      - name: 📦 Install Server Dependencies
+        run: cd server && npm install
+
+      - name: 🔄 Deploy Backend to Render
+        run: |
+          curl https://api.render.com/deploy/${{ secrets.RENDER_SERVICE_ID }}?key=${{ secrets.RENDER_API_KEY }} -X POST
+
+      - name: �📋 Deployment Status
         run: |
           echo "### 🚀 Deployment Started" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
