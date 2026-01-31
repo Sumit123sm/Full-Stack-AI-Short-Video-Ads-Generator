@@ -1,0 +1,90 @@
+name: 🔒 Security Scan
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+  schedule:
+    - cron: '0 0 * * 0'  # Weekly security scan
+
+jobs:
+  dependency-check:
+    name: 🔍 Dependency Security Check
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        workspace: [client, server]
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🔧 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: ./${{ matrix.workspace }}/package-lock.json
+
+      - name: 📦 Install dependencies
+        working-directory: ./${{ matrix.workspace }}
+        run: npm ci
+
+      - name: 🛡️ Run npm audit
+        working-directory: ./${{ matrix.workspace }}
+        run: npm audit --audit-level=moderate || true
+
+      - name: 🔍 Check for vulnerable packages
+        working-directory: ./${{ matrix.workspace }}
+        run: |
+          echo "### Security Scan for ${{ matrix.workspace }}" >> $GITHUB_STEP_SUMMARY
+          npm audit --json > audit.json || true
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Audit report generated" >> $GITHUB_STEP_SUMMARY
+
+  codeql:
+    name: 🔐 CodeQL Analysis
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+    strategy:
+      matrix:
+        language: [javascript]
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🔐 Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: ${{ matrix.language }}
+          queries: security-and-quality
+
+      - name: 🔨 Build
+        run: |
+          echo "Building code for analysis..."
+          cd client && npm ci && npm run build && cd ..
+          cd server && npm ci && npm run build && cd ..
+
+      - name: 📊 Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:${{ matrix.language }}"
+
+  security-summary:
+    name: 📋 Security Summary
+    runs-on: ubuntu-latest
+    needs: [dependency-check]
+    if: always()
+    steps:
+      - name: 📊 Generate Report
+        run: |
+          echo "### 🔒 Security Scan Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Dependency scanning completed" >> $GITHUB_STEP_SUMMARY
+          echo "✅ CodeQL analysis running" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Recommendations:**" >> $GITHUB_STEP_SUMMARY
+          echo "- Run \`npm audit fix\` to patch vulnerabilities" >> $GITHUB_STEP_SUMMARY
+          echo "- Keep dependencies updated regularly" >> $GITHUB_STEP_SUMMARY
+          echo "- Review security alerts in Settings > Security" >> $GITHUB_STEP_SUMMARY

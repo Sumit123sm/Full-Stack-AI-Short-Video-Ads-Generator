@@ -1,5 +1,9 @@
 # Project Discussion Pack – Full Stack AI Short Video Ads Generator
 
+**🚀 Live Demo:**
+- **Frontend**: https://ai-ugc-ads-client.vercel.app/
+- **Backend API**: https://ai-ads-ugc-server.onrender.com
+
 ## 1. PROJECT OVERVIEW
 - **What**: A full-stack web app that turns user-uploaded product/person images into AI-generated photo composites and short product promo videos.
 - **Purpose**: Let marketers and founders create studio-quality vertical ads without a production crew.
